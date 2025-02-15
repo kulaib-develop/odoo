@@ -37,7 +37,7 @@
                                     <t t-esc="doc.expected_complete_date"></t>
                                 </div>
                             </div>
-                            <div>
+                            <div class='mt-2'>
                                 <div class="fw-bold">Description: </div>
                                 <t class='small text-secondary' t-esc="doc.description"></t>
                             </div>
