@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Odoo",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "venv/Scripts/python.exe odoo-bin",
+        }
+    ]
+}
