@@ -23,16 +23,29 @@
             <group>
               <group>
                 <field name="assign_to_id" />
+                <field name="assign_to_email" />
                 <field name="active" invisible="1" />
               </group>
               <group>
                 <field name="due_date" />
                 <field name="expected_complete_date" />
+                <field name="total_subtasks" />
               </group>
             </group>
             <group>
               <field name="description" />
             </group>
+            <notebook>
+              <page name="sub_tasks" string="SubTasks">
+                <field name="subtask_ids">
+                  <list editable="bottom">
+                    <field name="name" />i
+                    <field name="start" />i
+                    <field name="end" />i
+                  </list>
+                </field>
+              </page>
+            </notebook>
           </sheet>
           <chatter />
 

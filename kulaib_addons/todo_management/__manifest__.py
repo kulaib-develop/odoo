@@ -5,7 +5,7 @@
     'summary': "Short (1 phrase/line) summary of the module's purpose",
 
     'description': """
-Long description of module's purpose
+        Long description of module's purpose
     """,
 
     'author': "Muhammad Kulaib",
@@ -24,6 +24,7 @@ Long description of module's purpose
         'security/ir.model.access.csv',
         'views/mainmenu.xml',
         'views/task_view.xml',
+        'reports/task_report.xml',
     ],
     # only loaded in demonstration mode
     "application": True
