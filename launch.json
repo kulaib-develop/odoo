@@ -5,7 +5,7 @@
             "name": "Run Odoo",
             "type": "node-terminal",
             "request": "launch",
-            "command": "venv/Scripts/python.exe odoo-bin",
+            "command": "venv/Scripts/python.exe odoo-bin"
         }
     ]
 }

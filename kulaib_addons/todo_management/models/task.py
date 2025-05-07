@@ -26,7 +26,8 @@ class Task(models.Model):
             rec.status = 'closed'
     
     def _cron_check_complete_task_date(self):
-        data = self.search([('expected_complete_date')])
+
+        data = self.search([('expected_complete_date','<=',fields.Date.today())])
         data.update({
             'is_late': True
         })
