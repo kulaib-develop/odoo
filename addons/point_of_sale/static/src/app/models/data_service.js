@@ -291,22 +291,20 @@ export class PosData extends Reactive {
         this.models.loadData(data, this.modelToLoad);
         this.models.loadData({ "pos.order": order, "pos.order.line": orderlines });
         const dbData = await this.loadIndexedDBData();
-        if (dbData && dbData["pos.order"]?.length) {
-            const ids = dbData["pos.order"].map((o) => o.id).filter((id) => typeof id === "number");
+        this.loadedIndexedDBProducts = dbData ? dbData["product.product"] : [];
+        this.sanitizeData();
+        this.network.loading = false;
+    }
 
-            if (ids.length) {
-                const result = await this.read("pos.order", ids);
-                const serverIds = result.map((r) => r.id);
-
-                for (const id of ids) {
-                    if (!serverIds.includes(id)) {
-                        this.localDeleteCascade(this.models["pos.order"].get(id));
-                    }
-                }
+    sanitizeData() {
+        const order_to_delete = this.models["pos.order"].filter((order) =>
+            order.lines.some((line) => line.is_reward_line && !line.coupon_id)
+        );
+        for (const order of order_to_delete) {
+            for (let i = order.lines.length - 1; i >= 0; i--) {
+                order.lines[i].delete();
             }
         }
-        this.loadedIndexedDBProducts = dbData ? dbData["product.product"] : [];
-        this.network.loading = false;
     }
 
     async execute({
@@ -488,6 +486,10 @@ export class PosData extends Reactive {
 
             for (const [, rel] of relations) {
                 if (this.opts.pohibitedAutoLoadedModels.includes(rel.relation)) {
+                    continue;
+                }
+
+                if (this.opts.prohibitedAutoLoadedFields[rel.model]?.includes(rel.name)) {
                     continue;
                 }
 

@@ -102,7 +102,11 @@ class AccountEdiFormat(models.Model):
         # Detect for which is the main tax for 'recargo'. Since only a single combination tax + recargo is allowed
         # on the same invoice, this can be deduced globally.
 
-        recargo_tax_details = defaultdict(list)  # Mapping between main tax and recargo tax details
+        # Mapping between main tax and recargo tax details
+        # structure: {("l10n_es_type" of the main tax, amount of the main tax): {'tax_amount': float, 'applied_tax_amount': float}}
+        # dict of keys: tuple ("l10n_es_type" of the main tax, amount of the main tax)
+        #       values: dict of float
+        recargo_tax_details = defaultdict(lambda: defaultdict(float))
         for base_line in tax_details['base_lines']:
             line = base_line['record']
             taxes = line.tax_ids.flatten_taxes_hierarchy()
@@ -110,16 +114,17 @@ class AccountEdiFormat(models.Model):
             if recargo_tax and taxes:
                 recargo_main_tax = taxes.filtered(lambda x: x.l10n_es_type in ('sujeto', 'sujeto_isp'))[:1]
                 aggregated_values = tax_details['tax_details_per_record'][line]
-                if not recargo_tax_details.get(recargo_main_tax):
-                    recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount] = next(iter(
-                        values
-                        for values in aggregated_values['tax_details'].values()
-                        if (
-                            values['grouping_key']
-                            and values['grouping_key']['l10n_es_type'] == recargo_tax.l10n_es_type
-                            and values['grouping_key']['applied_tax_amount'] == recargo_tax.amount
-                        )
-                    ))
+                recargo_values = next(iter(
+                    values
+                    for values in aggregated_values['tax_details'].values()
+                    if (
+                        values['grouping_key']
+                        and values['grouping_key']['l10n_es_type'] == recargo_tax.l10n_es_type
+                        and values['grouping_key']['applied_tax_amount'] == recargo_tax.amount
+                    )
+                ))
+                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['tax_amount'] += recargo_values['tax_amount']
+                recargo_tax_details[recargo_main_tax.l10n_es_type, recargo_main_tax.amount]['applied_tax_amount'] = recargo_values['applied_tax_amount']
 
         tax_amount_deductible = 0.0
         tax_amount_retention = 0.0
@@ -185,7 +190,12 @@ class AccountEdiFormat(models.Model):
                     tax_info = {
                         'BaseImponible': float_round(base_amount, 2),
                     }
-                    if tax_values['applied_tax_amount'] > 0.0:
+                    if tax_values['l10n_es_type'] == 'sujeto_agricultura':
+                        tax_info.update({
+                            'PorcentCompensacionREAGYP': tax_values['applied_tax_amount'],
+                            'ImporteCompensacionREAGYP': round(math.copysign(tax_values['tax_amount'], base_amount), 2),
+                        })
+                    elif tax_values['applied_tax_amount'] > 0.0:
                         tax_info.update({
                             'TipoImpositivo': tax_values['applied_tax_amount'],
                             'CuotaSoportada': float_round(math.copysign(tax_values['tax_amount'], base_amount), 2),
@@ -290,6 +300,7 @@ class AccountEdiFormat(models.Model):
             if invoice.delivery_date and invoice.delivery_date != invoice.invoice_date:
                 invoice_node['FechaOperacion'] = invoice.delivery_date.strftime('%d-%m-%Y')
             invoice_node['DescripcionOperacion'] = invoice.invoice_origin[:500] if invoice.invoice_origin else 'manual'
+            reagyp = invoice.invoice_line_ids.tax_ids.filtered(lambda t: t.l10n_es_type == 'sujeto_agricultura')
             if invoice.is_sale_document():
                 nif = invoice.company_id.vat[2:] if invoice.company_id.vat.startswith('ES') else invoice.company_id.vat
                 info['IDFactura']['IDEmisorFactura'] = {'NIF': nif}
@@ -324,7 +335,12 @@ class AccountEdiFormat(models.Model):
                 mod_303_11 = self.env.ref('l10n_es.mod_303_casilla_11_balance')._get_matching_tags()
                 tax_tags = invoice.invoice_line_ids.tax_ids.repartition_line_ids.tag_ids
                 intracom = bool(tax_tags & (mod_303_10 + mod_303_11))
-                invoice_node['ClaveRegimenEspecialOTrascendencia'] = '09' if intracom else '01'
+                if intracom:
+                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '09'
+                elif reagyp:
+                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '02'
+                else:
+                    invoice_node['ClaveRegimenEspecialOTrascendencia'] = '01'
 
             if invoice.move_type == 'out_invoice':
                 invoice_node['TipoFactura'] = 'F2' if is_simplified else 'F1'
@@ -332,9 +348,12 @@ class AccountEdiFormat(models.Model):
                 invoice_node['TipoFactura'] = 'R5' if is_simplified else 'R1'
                 invoice_node['TipoRectificativa'] = 'I'
             elif invoice.move_type == 'in_invoice':
-                invoice_node['TipoFactura'] = 'F1'
-                if invoice._l10n_es_is_dua():
+                if reagyp:
+                    invoice_node['TipoFactura'] = 'F6'
+                elif invoice._l10n_es_is_dua():
                     invoice_node['TipoFactura'] = 'F5'
+                else:
+                    invoice_node['TipoFactura'] = 'F1'
             elif invoice.move_type == 'in_refund':
                 invoice_node['TipoFactura'] = 'R4'
                 invoice_node['TipoRectificativa'] = 'I'
@@ -345,8 +364,7 @@ class AccountEdiFormat(models.Model):
 
             if invoice.is_sale_document():
                 # Customer invoices
-
-                if not com_partner._l10n_es_is_foreign():
+                if not com_partner._l10n_es_is_foreign() or is_simplified:
                     tax_details_info_vals = self._l10n_es_edi_get_invoices_tax_details_info(invoice)
                     invoice_node['TipoDesglose'] = {'DesgloseFactura': tax_details_info_vals['tax_details_info']}
 

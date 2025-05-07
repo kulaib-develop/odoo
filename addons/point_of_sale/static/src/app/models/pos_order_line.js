@@ -59,8 +59,7 @@ export class PosOrderline extends Base {
     }
 
     get preparationKey() {
-        const note = this.getNote();
-        return `${this.uuid} - ${note}`;
+        return this.uuid;
     }
 
     get quantityStr() {
@@ -671,7 +670,11 @@ export class PosOrderline extends Base {
             ),
             taxGroupLabels: [
                 ...new Set(
-                    this.product_id.taxes_id
+                    getTaxesAfterFiscalPosition(
+                        this.product_id.taxes_id,
+                        this.order_id.fiscal_position_id,
+                        this.models
+                    )
                         ?.map((tax) => tax.tax_group_id.pos_receipt_label)
                         .filter((label) => label)
                 ),

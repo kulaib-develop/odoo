@@ -234,7 +234,7 @@ msgstr "Huisgemaakte frietjes"
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/app/control_buttons/control_buttons.xml:0
 msgid "Bill"
-msgstr "Leveranciersfactuur"
+msgstr "Rekening"
 
 #. module: pos_restaurant
 #. odoo-javascript
@@ -536,7 +536,7 @@ msgstr "Zalen"
 #. module: pos_restaurant
 #: model_terms:ir.ui.view,arch_db:pos_restaurant.res_config_settings_view_form
 msgid "Floors & Tables Map"
-msgstr "Zaal- & tafelplan"
+msgstr "Vloer & tafelplan"
 
 #. module: pos_restaurant
 #: model:pos.category,name:pos_restaurant.food
@@ -894,12 +894,12 @@ msgstr "Kassa's"
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_res_config_settings__pos_iface_printbill
 msgid "Pos Iface Printbill"
-msgstr "Kassa Iface Factuur afdrukken"
+msgstr "Kassa Iface Rekening afdrukken"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_res_config_settings__pos_iface_splitbill
 msgid "Pos Iface Splitbill"
-msgstr "Kassa Iface Factuur splitsen"
+msgstr "Kassa Iface Rekening splitsen"
 
 #. module: pos_restaurant
 #: model:ir.model.fields,field_description:pos_restaurant.field_res_config_settings__pos_set_tip_after_payment
@@ -1312,7 +1312,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/pos_restaurant/static/src/overrides/components/ticket_screen/ticket_screen.xml:0
 msgid "Tip"
-msgstr "Tip"
+msgstr "Fooi"
 
 #. module: pos_restaurant
 #. odoo-javascript

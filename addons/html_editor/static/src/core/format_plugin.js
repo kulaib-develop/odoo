@@ -1,22 +1,33 @@
 import { Plugin } from "../plugin";
-import { isBlock } from "../utils/blocks";
+import { closestBlock, isBlock } from "../utils/blocks";
 import { hasAnyNodesColor } from "@html_editor/utils/color";
 import { cleanTextNode, splitTextNode, unwrapContents } from "../utils/dom";
 import {
     areSimilarElements,
     isContentEditable,
+    isEmptyTextNode,
+    isEmptyBlock,
     isSelfClosingElement,
     isTextNode,
     isVisibleTextNode,
+    isZwnbsp,
     isZWS,
+    previousLeaf,
 } from "../utils/dom_info";
-import { childNodes, closestElement, descendants, selectElements } from "../utils/dom_traversal";
+import {
+    childNodes,
+    closestElement,
+    descendants,
+    selectElements,
+    findFurthest,
+} from "../utils/dom_traversal";
 import { FONT_SIZE_CLASSES, formatsSpecs } from "../utils/formatting";
 import { boundariesIn, boundariesOut, DIRECTIONS, leftPos, rightPos } from "../utils/position";
 import { prepareUpdate } from "@html_editor/utils/dom_state";
 import { _t } from "@web/core/l10n/translation";
 import { callbacksForCursorUpdate } from "@html_editor/utils/selection";
 import { withSequence } from "@html_editor/utils/resource";
+import { isFakeLineBreak } from "../utils/dom_state";
 
 const allWhitespaceRegex = /^[\s\u200b]*$/;
 
@@ -136,6 +147,7 @@ export class FormatPlugin extends Plugin {
         beforeinput_handlers: withSequence(20, this.onBeforeInput.bind(this)),
         clean_for_save_handlers: this.cleanForSave.bind(this),
         normalize_handlers: this.normalize.bind(this),
+        selectionchange_handlers: this.removeEmptyInlineElement.bind(this),
 
         intangible_char_for_keyboard_navigation_predicates: (_, char) => char === "\u200b",
     };
@@ -180,7 +192,13 @@ export class FormatPlugin extends Plugin {
     isSelectionFormat(format, traversedNodes = this.dependencies.selection.getTraversedNodes()) {
         const selectedNodes = traversedNodes.filter(isTextNode);
         const isFormatted = formatsSpecs[format].isFormatted;
-        return selectedNodes.length && selectedNodes.every((n) => isFormatted(n, this.editable));
+        return (
+            selectedNodes.length &&
+            selectedNodes.every(
+                (node) =>
+                    isZwnbsp(node) || isEmptyTextNode(node) || isFormatted(node, this.editable)
+            )
+        );
     }
 
     // @todo: issues:
@@ -236,7 +254,9 @@ export class FormatPlugin extends Plugin {
                 .filter(
                     (n) =>
                         ((isTextNode(n) && (isVisibleTextNode(n) || isZWS(n))) ||
-                            n.nodeName === "BR") &&
+                            (n.nodeName === "BR" &&
+                                (isFakeLineBreak(n) ||
+                                    previousLeaf(n, closestBlock(n))?.nodeName === "BR"))) &&
                         isContentEditable(n)
                 )
         );
@@ -389,6 +409,29 @@ export class FormatPlugin extends Plugin {
             this.cleanElement(element, { preserveSelection });
         }
         this.mergeAdjacentInlines(root, { preserveSelection });
+    }
+
+    removeEmptyInlineElement(selectionData) {
+        const { anchorNode } = selectionData.editableSelection;
+        const blockEl = closestBlock(anchorNode);
+        const inlineElement = findFurthest(
+            closestElement(anchorNode),
+            blockEl,
+            (e) => !isBlock(e) && e.textContent === "\u200b"
+        );
+        if (
+            this.lastEmptyInlineElement?.isConnected &&
+            this.lastEmptyInlineElement !== inlineElement
+        ) {
+            // Remove last empty inline element.
+            this.cleanElement(this.lastEmptyInlineElement, { preserveSelection: true });
+        }
+        // Skip if current block is empty.
+        if (inlineElement && !isEmptyBlock(blockEl)) {
+            this.lastEmptyInlineElement = inlineElement;
+        } else {
+            this.lastEmptyInlineElement = null;
+        }
     }
 
     cleanElement(element, { preserveSelection }) {

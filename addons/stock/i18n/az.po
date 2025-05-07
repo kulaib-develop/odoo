@@ -4,18 +4,18 @@
 # 
 # Translators:
 # Nurlan Farajov, 2024
-# Jumshud Sultanov <cumshud@gmail.com>, 2024
 # shahriyar rzayev, 2024
-# Nurlan Farajov <coolinuxoid@gmail.com>, 2024
-# erpgo translator <jumshud@erpgo.az>, 2024
+# Jumshud Sultanov <cumshud@gmail.com>, 2025
+# Nurlan Farajov <coolinuxoid@gmail.com>, 2025
+# erpgo translator <jumshud@erpgo.az>, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-27 13:02+0000\n"
+"POT-Creation-Date: 2025-03-19 20:36+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: erpgo translator <jumshud@erpgo.az>, 2024\n"
+"Last-Translator: erpgo translator <jumshud@erpgo.az>, 2025\n"
 "Language-Team: Azerbaijani (https://app.transifex.com/odoo/teams/41243/az/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,6 +31,9 @@ msgid ""
 "\n"
 "Transfers %(transfer_list)s: You need to supply a Lot/Serial number for products %(product_list)s."
 msgstr ""
+"\n"
+"\n"
+"Köçürmə %(transfer_list)s: Sizə %(product_list)s məhsulu üçün Partiya/ Seriya nömrəsi təqdim etmək lazımdır. "
 
 #. module: stock
 #. odoo-python
@@ -39,6 +42,8 @@ msgid ""
 "\n"
 "(%(serial_number)s) exists in location %(location)s"
 msgstr ""
+"\n"
+"(%(serial_number)s) %(location)s yerində mövcuddur"
 
 #. module: stock
 #. odoo-python
@@ -527,6 +532,39 @@ msgid ""
 "</div>\n"
 "        "
 msgstr ""
+"<div style=\"margin: 0px; padding: 0px;\">\n"
+"    <p style=\"margin: 0px; padding: 0px; font-size: 13px;\">\n"
+"        Salam <t t-out=\"object.partner_id.name or ''\">Brandon Freeman</t>,<br/><br/>\n"
+"        Sizi məmnuniyyətlə məlumatlandırıq ki, sifarişiniz göndərilib.\n"
+"        <t t-if=\"hasattr(object, 'carrier_tracking_ref') and object.carrier_tracking_ref\">\n"
+"            Sizin izləmə nömrəniz:\n"
+"            <strong>\n"
+"            <t t-if=\"object.carrier_tracking_url\">\n"
+"                <t t-set=\"multiple_carrier_tracking\" t-value=\"object.get_multiple_carrier_tracking()\"/>\n"
+"                <t t-if=\"multiple_carrier_tracking\">\n"
+"                    <t t-foreach=\"multiple_carrier_tracking\" t-as=\"line\">\n"
+"                        <br/><a t-att-href=\"line[1]\" target=\"_blank\" t-out=\"line[0] or ''\"/>\n"
+"                    </t>\n"
+"                </t>\n"
+"                <t t-else=\"\">\n"
+"                    <a t-attf-href=\"{{ object.carrier_tracking_url }}\" target=\"_blank\" t-out=\"object.carrier_tracking_ref or ''\"/>.\n"
+"                </t>\n"
+"            </t>\n"
+"            <t t-else=\"\">\n"
+"                <t t-out=\"object.carrier_tracking_ref or ''\"/>.\n"
+"            </t>\n"
+"            </strong>\n"
+"        </t>\n"
+"        <br/><br/>\n"
+"        Daha ətraflı məlumat üçün çatdırılma sənədinizi əlavə faylda tapa bilərsiniz.<br/><br/>\n"
+"        Təşəkkür edirik,\n"
+"        <t t-if=\"user.signature\" data-o-mail-quote-container=\"1\">\n"
+"            <br/>\n"
+"            <t t-out=\"user.signature or ''\" data-o-mail-quote=\"1\">--<br data-o-mail-quote=\"1\"/>Mitchell Admin</t>\n"
+"        </t>\n"
+"    </p>\n"
+"</div>\n"
+"        "
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.stock_scrap_view_kanban
@@ -1245,7 +1283,7 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/stock/static/src/components/reception_report_line/stock_reception_report_line.xml:0
 msgid "Assign"
-msgstr ""
+msgstr "Təyin et"
 
 #. module: stock
 #. odoo-javascript
@@ -1833,7 +1871,7 @@ msgstr "Çatdırılma xərclərini hesabla və DHL ilə göndər"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Easypost"
-msgstr ""
+msgstr "Göndərmə xərclərini hesablayın və Easypost ilə göndərin"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
@@ -1843,17 +1881,17 @@ msgstr "Çatdırılma xərclərini hesabla və FedEx ilə göndər"
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Sendcloud"
-msgstr ""
+msgstr "Göndərmə xərclərini hesablayın və Sendcloud ilə göndərin"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Shiprocket"
-msgstr ""
+msgstr "Göndərmə xərclərini hesablayın və Shiprocket ilə göndərin"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Compute shipping costs and ship with Starshipit"
-msgstr ""
+msgstr "Göndərmə xərclərini hesablayın və Starshipit ilə göndərin"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
@@ -1972,7 +2010,7 @@ msgstr "Davam edin"
 #: code:addons/stock/static/src/client_actions/stock_traceability_report_backend.xml:0
 #: code:addons/stock/static/src/components/reception_report_main/stock_reception_report_main.xml:0
 msgid "Control panel buttons"
-msgstr ""
+msgstr "İdarəetmə paneli düymələri"
 
 #. module: stock
 #: model:ir.model.fields,help:stock.field_product_replenish__product_uom_category_id
@@ -2648,7 +2686,7 @@ msgstr "Çatdırılma Ünvanı"
 #: model:ir.model.fields,field_description:stock.field_stock_lot_report__delivery_date
 #: model_terms:ir.ui.view,arch_db:stock.search_customer_lot_filter
 msgid "Delivery Date"
-msgstr ""
+msgstr "Çatdırılma tarixi"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery
@@ -3091,7 +3129,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_easypost
 msgid "Easypost Connector"
-msgstr ""
+msgstr "Easypost Connector"
 
 #. module: stock
 #. odoo-python
@@ -3221,7 +3259,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_quant__is_favorite
 msgid "Favorite"
-msgstr ""
+msgstr "Favorit"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_picking_type__favorite_user_ids
@@ -3241,7 +3279,7 @@ msgstr "Fevral"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_fedex
 msgid "FedEx Connector"
-msgstr ""
+msgstr "FedEx birləşdiricisi"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_package_destination__filtered_location
@@ -3438,7 +3476,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock.field_lot_label_layout__print_format
 #: model:ir.model.fields,field_description:stock.field_product_label_layout__print_format
 msgid "Format"
-msgstr ""
+msgstr "Format"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_replenishment_option__free_qty
@@ -3969,12 +4007,6 @@ msgid "Immediate Transfer"
 msgstr ""
 
 #. module: stock
-#. odoo-python
-#: code:addons/stock/models/stock_quant.py:0
-msgid "Import"
-msgstr "İmport"
-
-#. module: stock
 #. odoo-javascript
 #: code:addons/stock/static/src/widgets/generate_serial.js:0
 msgid "Import Lots"
@@ -4133,7 +4165,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_lot__ref
 msgid "Internal Reference"
-msgstr ""
+msgstr "Daxili Referans"
 
 #. module: stock
 #: model:ir.model.fields.selection,name:stock.selection__stock_picking_type__code__internal
@@ -4313,7 +4345,7 @@ msgstr ""
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_stock_quant_form_editable
 msgid "Inventory Valuation"
-msgstr ""
+msgstr "İntentarın Qiymətləndirilməsi"
 
 #. module: stock
 #: model:ir.actions.act_window,name:stock.action_inventory_at_date
@@ -4669,7 +4701,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:stock.field_stock_replenishment_option__lead_time
 #: model:ir.model.fields,field_description:stock.field_stock_rule__delay
 msgid "Lead Time"
-msgstr ""
+msgstr "Göndərmə vaxtı"
 
 #. module: stock
 #. odoo-javascript
@@ -5828,7 +5860,7 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock/models/stock_picking.py:0
 msgid "Order signed by %s"
-msgstr ""
+msgstr "%s tərəfindən imzalanmış sifariş"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.report_delivery_document
@@ -6367,8 +6399,8 @@ msgstr "Mövcudluq əməliyyat növündən asılıdır."
 #. odoo-python
 #: code:addons/stock/models/stock_quant.py:0
 msgid ""
-"Press the CREATE button to define quantity for each product in your stock or"
-" import them from a spreadsheet throughout Favorites"
+"Press the \"New\" button to define the quantity for a product in your stock "
+"or import quantities from a spreadsheet via the Actions menu"
 msgstr ""
 
 #. module: stock
@@ -7909,7 +7941,7 @@ msgstr ""
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
 msgid "Sell and purchase products in different units of measure"
-msgstr ""
+msgstr "Məhsulları müxtəlif ölçü vahidlərində satmaq və almaq"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.res_config_settings_view_form
@@ -7931,7 +7963,7 @@ msgstr "Emaili göndər"
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_sendcloud
 msgid "Sendcloud Connector"
-msgstr ""
+msgstr "Sendcloud Konnektoru"
 
 #. module: stock
 #: model:mail.template,description:stock.mail_template_data_delivery_confirmation
@@ -7942,7 +7974,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__barcode_separator
 msgid "Separator"
-msgstr ""
+msgstr "Ayırıcı"
 
 #. module: stock
 #: model:ir.model.fields.selection,name:stock.selection__res_company__annual_inventory_month__9
@@ -8125,7 +8157,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_shiprocket
 msgid "Shiprocket Connector"
-msgstr ""
+msgstr "Shiprocket birləşdiricisi"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_stock_warehouse__code
@@ -8237,7 +8269,7 @@ msgstr "İşarə"
 #: model:ir.model.fields,field_description:stock.field_stock_picking__signature
 #: model:ir.model.fields,help:stock.field_stock_picking__signature
 msgid "Signature"
-msgstr ""
+msgstr "İmza"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.vpicktree
@@ -8360,7 +8392,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_starshipit
 msgid "Starshipit Connector"
-msgstr ""
+msgstr "Starshipit birləşdiricisi"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_report_stock_quantity__state
@@ -8739,6 +8771,14 @@ msgstr ""
 #. odoo-python
 #: code:addons/stock/models/stock_quant.py:0
 msgid "The Lot/Serial number (%s) is linked to another product."
+msgstr ""
+
+#. module: stock
+#. odoo-python
+#: code:addons/stock/models/stock_picking.py:0
+msgid ""
+"The Picking Operations report has been deleted so you cannot print at this "
+"time unless the report is restored."
 msgstr ""
 
 #. module: stock
@@ -9376,7 +9416,7 @@ msgstr "Bugünkü Fəaliyyətlər"
 #: model:ir.model.fields.selection,name:stock.selection__stock_picking__search_date_category__day_1
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_internal_search
 msgid "Tomorrow"
-msgstr ""
+msgstr "Sabah"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.view_stock_quant_tree_editable
@@ -9646,12 +9686,12 @@ msgstr "Qeyddəki istisna fəaliyyət növü."
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_ups
 msgid "UPS Connector"
-msgstr ""
+msgstr "UPS Konnektoru"
 
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_usps
 msgid "USPS Connector"
-msgstr ""
+msgstr "USPS birləşdiricisi"
 
 #. module: stock
 #. odoo-javascript
@@ -10264,7 +10304,7 @@ msgstr ""
 msgid ""
 "When products are needed in <b>%(destination)s</b>, <br> "
 "<b>%(operation)s</b> are created from <b>%(source_location)s</b> to fulfill "
-"the need."
+"the need. %(suffix)s"
 msgstr ""
 
 #. module: stock
@@ -10372,7 +10412,7 @@ msgstr ""
 #: model:ir.model.fields.selection,name:stock.selection__stock_picking__search_date_category__yesterday
 #: model_terms:ir.ui.view,arch_db:stock.view_picking_internal_search
 msgid "Yesterday"
-msgstr ""
+msgstr "Dünən"
 
 #. module: stock
 #: model_terms:ir.ui.view,arch_db:stock.stock_quant_relocate_view_form
@@ -10880,7 +10920,7 @@ msgstr ""
 #. module: stock
 #: model:ir.model.fields,field_description:stock.field_res_config_settings__module_delivery_bpost
 msgid "bpost Connector"
-msgstr ""
+msgstr "bpost birləşdiricisi"
 
 #. module: stock
 #: model:product.removal,method:stock.removal_closest
@@ -10997,7 +11037,7 @@ msgstr ""
 #: code:addons/stock/static/src/widgets/json_widget.xml:0
 #: model_terms:ir.ui.view,arch_db:stock.view_product_replenish
 msgid "is"
-msgstr ""
+msgstr "bərabərdir"
 
 #. module: stock
 #: model:product.removal,method:stock.removal_least_packages

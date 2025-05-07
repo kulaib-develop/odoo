@@ -22,7 +22,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         cls.out_invoice = cls.env['account.move'].create({
             'name': 'INV/01',
             'move_type': 'out_invoice',
-            'invoice_date': date(2022, 1, 1),
+            'invoice_date': date(2025, 1, 1),
             'partner_id': cls.partner_a.id,
             'invoice_line_ids': [(0, 0, {
                 'product_id': cls.product_a.id,
@@ -48,7 +48,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
         with freeze_time(self.frozen_today):
             invoice = self.out_invoice.copy({
                 'name': 'INV01',
-                'invoice_date': date(2022, 1, 1),
+                'invoice_date': date(2025, 1, 1),
             })
             edi_document = invoice._l10n_es_tbai_create_edi_document(cancel=False)
             edi_document._generate_xml(invoice._l10n_es_tbai_get_values(cancel=False))
@@ -126,7 +126,6 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
                         <BaseImponible>984.00</BaseImponible>
                         <TipoImpositivo>21.00</TipoImpositivo>
                         <CuotaImpuesto>206.64</CuotaImpuesto>
-                        <OperacionEnRecargoDeEquivalenciaORegimenSimplificado>N</OperacionEnRecargoDeEquivalenciaORegimenSimplificado>
                       </DetalleIVA>
                     </DesgloseIVA>
                 </xpath>
@@ -221,6 +220,30 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
             xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in_140.xml'))
             self.assertXmlTreeEqual(xml_doc, xml_expected)
 
+    def test_xml_tree_no_deducible_tax(self):
+        """Test XML of vendor bill with non deductible tax"""
+        self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
+
+        with freeze_time(self.frozen_today):
+            self.in_invoice = self.env['account.move'].create({
+                'name': 'INV/01',
+                'move_type': 'in_invoice',
+                'ref': 'INV/5234',
+                'invoice_date': datetime.now(),
+                'partner_id': self.partner_a.id,
+                'invoice_line_ids': [(0, 0, {
+                    'product_id': self.product_a.id,
+                    'price_unit': 1000.0,
+                    'quantity': 1,
+                    'tax_ids': [(6, 0, self._get_tax_by_xml_id('p_iva10_nd').ids)],
+                })],
+            })
+            edi_document = self.in_invoice._l10n_es_tbai_create_edi_document(cancel=False)
+            edi_document._generate_xml(self.in_invoice._l10n_es_tbai_get_values(cancel=False))
+            xml_doc = edi_document._get_xml()
+            xml_expected = etree.fromstring(super()._get_sample_xml('xml_post_in_nd.xml'))
+            self.assertXmlTreeEqual(xml_doc, xml_expected)
+
     def test_xml_tree_in_ic_post(self):
         """Test XML of vendor bill for LROE Batuz intra-community"""
         self.company_data['company'].l10n_es_tbai_tax_agency = 'bizkaia'
@@ -254,7 +277,7 @@ class TestEdiTbaiXmls(TestEsEdiTbaiCommon):
 
     def test_xml_tree_cancel(self):
         post_xml = b"""<TicketBAI>
-<CabeceraFactura><FechaExpedicionFactura>01-01-2022</FechaExpedicionFactura></CabeceraFactura>
+<CabeceraFactura><FechaExpedicionFactura>01-01-2025</FechaExpedicionFactura></CabeceraFactura>
 <ds:SignatureValue xmlns:ds="http://www.w3.org/2000/09/xmldsig#">TEXT</ds:SignatureValue>
 </TicketBAI>"""  # hack to set out_invoice's registration date
         post_edi_document = self.out_invoice._l10n_es_tbai_create_edi_document()

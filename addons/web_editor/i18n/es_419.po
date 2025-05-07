@@ -4,7 +4,7 @@
 # 
 # Translators:
 # Wil Odoo, 2024
-# Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2024
+# Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2025
 # Fernanda Alvarez, 2025
 # 
 msgid ""
@@ -1215,7 +1215,7 @@ msgstr "Color de la fuente"
 #. odoo-javascript
 #: code:addons/web_editor/static/src/xml/editor.xml:0
 msgid "Font size"
-msgstr "Tamaño de fuente"
+msgstr "Tamaño de la fuente"
 
 #. module: web_editor
 #. odoo-javascript
@@ -1582,7 +1582,7 @@ msgstr "Inserte un bloque"
 #. odoo-javascript
 #: code:addons/web_editor/static/src/js/wysiwyg/wysiwyg.js:0
 msgid "Insert a danger banner"
-msgstr "Insertar un mensaje de advertencia"
+msgstr "Insertar un mensaje de peligro"
 
 #. module: web_editor
 #. odoo-javascript
@@ -1793,7 +1793,7 @@ msgstr "Tamaño del enlace "
 #. odoo-javascript
 #: code:addons/web_editor/static/src/xml/wysiwyg.xml:0
 msgid "Link Style"
-msgstr "Estilo de enlace"
+msgstr "Estilo del enlace"
 
 #. module: web_editor
 #. odoo-javascript
@@ -2128,7 +2128,7 @@ msgstr "Calidad"
 #: code:addons/web_editor/static/src/js/wysiwyg/wysiwyg.js:0
 #: code:addons/web_editor/static/src/xml/editor.xml:0
 msgid "Quote"
-msgstr "Cotización"
+msgstr "Cita"
 
 #. module: web_editor
 #: model:ir.model,name:web_editor.model_ir_qweb

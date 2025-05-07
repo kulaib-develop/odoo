@@ -43,7 +43,6 @@ const StepSchema = {
 };
 
 const TourSchema = {
-    checkDelay: { type: Number, optional: true },
     name: { type: String, optional: true },
     steps: Function,
     url: { type: String, optional: true },
@@ -179,7 +178,7 @@ export const tourService = {
             );
 
             if (tourConfig.mode === "auto") {
-                new TourAutomatic(tour).start(pointer);
+                new TourAutomatic(tour).start();
             } else {
                 new TourInteractive(tour).start(pointer, async () => {
                     pointer.stop();

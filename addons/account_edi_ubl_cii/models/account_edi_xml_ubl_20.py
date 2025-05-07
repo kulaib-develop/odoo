@@ -89,6 +89,17 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'electronic_mail': partner.email,
         }
 
+    def _get_partner_person_vals(self, partner):
+        """
+        This is optional and meant to be overridden when required under the form:
+        {
+            'first_name': str,
+            'family_name': str,
+        }.
+        Should return a dict.
+        """
+        return {}
+
     def _get_partner_party_vals(self, partner, role):
         return {
             'partner': partner,
@@ -98,6 +109,7 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'party_tax_scheme_vals': self._get_partner_party_tax_scheme_vals_list(partner.commercial_partner_id, role),
             'party_legal_entity_vals': self._get_partner_party_legal_entity_vals_list(partner.commercial_partner_id),
             'contact_vals': self._get_partner_contact_vals(partner),
+            'person_vals': self._get_partner_person_vals(partner),
         }
 
     def _get_invoice_period_vals_list(self, invoice):
@@ -176,7 +188,14 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         return vals
 
     def _get_invoice_payment_means_vals_list(self, invoice):
-        payment_means_code, payment_means_name = (30, 'credit transfer') if invoice.move_type == 'out_invoice' else (57, 'standing agreement')
+        if invoice.move_type == 'out_invoice':
+            if invoice.partner_bank_id:
+                payment_means_code, payment_means_name = (30, 'credit transfer')
+            else:
+                payment_means_code, payment_means_name = ('ZZZ', 'mutually defined')
+        else:
+            payment_means_code, payment_means_name = (57, 'standing agreement')
+
         # in Denmark payment code 30 is not allowed. we hardcode it to 1 ("unknown") for now
         # as we cannot deduce this information from the invoice
         if invoice.partner_id.country_code == 'DK':
@@ -342,8 +361,8 @@ class AccountEdiXmlUBL20(models.AbstractModel):
         :param line:    An invoice line.
         :return:        A list of python dictionaries.
         """
+        fixed_tax_charge_vals_list = []
         if self._context.get('convert_fixed_taxes'):
-            fixed_tax_charge_vals_list = []
             for grouping_key, tax_details in tax_values_list['tax_details'].items():
                 if grouping_key['tax_amount_type'] == 'fixed':
                     fixed_tax_charge_vals_list.append({
@@ -691,6 +710,10 @@ class AccountEdiXmlUBL20(models.AbstractModel):
             'name': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:Name', tree) or
                     self._find_value(f'.//cac:{role}Party/cac:Party//cbc:RegistrationName', tree),
             'country_code': self._find_value(f'.//cac:{role}Party/cac:Party//cac:Country//cbc:IdentificationCode', tree),
+            'street': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:StreetName', tree),
+            'street2': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:AdditionalStreetName', tree),
+            'city': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:CityName', tree),
+            'zip_code': self._find_value(f'.//cac:{role}Party/cac:Party//cbc:PostalZone', tree),
         }
 
     def _import_fill_invoice(self, invoice, tree, qty_factor):

@@ -101,7 +101,7 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             'date_maturity': False,
         }
         cls.term_line_vals_1 = {
-            'name': '',
+            'name': False,
             'product_id': False,
             'account_id': cls.company_data['default_account_receivable'].id,
             'partner_id': cls.partner_a.id,
@@ -1839,7 +1839,7 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': '',
+                'name': False,
                 'amount_currency': -1410.0,
                 'debit': 0.0,
                 'credit': 1410.0,
@@ -1902,7 +1902,7 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': '',
+                'name': False,
                 'amount_currency': 1410.0,
                 'debit': 1410.0,
                 'credit': 0.0,
@@ -1970,7 +1970,7 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': '',
+                'name': False,
                 'amount_currency': -1410.0,
                 'currency_id': self.other_currency.id,
                 'debit': 0.0,
@@ -2027,7 +2027,7 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             },
             {
                 **self.term_line_vals_1,
-                'name': '',
+                'name': False,
                 'amount_currency': 1410.0,
                 'currency_id': self.other_currency.id,
                 'debit': 705.0,
@@ -2628,6 +2628,31 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
             'amount_total' : self.move_vals['amount_total'],
             'amount_untaxed' : self.move_vals['amount_untaxed'],
         })
+
+    def test_out_invoice_switch_out_refund_3(self):
+        # Test to check that when switching from out_invoice to out_refund the fiscal position is kept
+        move = self.init_invoice('out_invoice')
+        move.fiscal_position_id = self.fiscal_pos_a.id
+
+        move.action_switch_move_type()
+
+        self.assertEqual(move.fiscal_position_id, self.fiscal_pos_a)
+
+    def test_out_invoice_switch_out_refund_4(self):
+        # Test to check that when switching from out_invoice to out_refund the bank partner is changed accordingly
+        bank = self.env["res.partner.bank"].create({
+            "bank_name": "FAKE",
+            "acc_number": "1234567890",
+            "partner_id": self.partner_a.id,
+        })
+
+        move = self.env["account.move"].with_context(default_move_type="out_invoice").new({
+            "partner_id": self.partner_a.id,
+        })
+        move.action_switch_move_type()
+
+        self.assertEqual(move.bank_partner_id, self.partner_a)
+        self.assertEqual(move.partner_bank_id, bank)
 
     def test_out_invoice_reverse_move_tags(self):
         country = self.env.ref('base.us')
@@ -3959,6 +3984,32 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
         move.journal_id = second_journal
         self.assertEqual(move.currency_id, self.other_currency)
 
+    def test_invoice_currency_mismatch_account_currency(self):
+        """
+        Test that an invoice cannot be posted if the invoice currency does not match the currency on the receivable/payable account.
+        """
+        # Create a receivable account with a specific currency (EUR)
+        receivable_account = self.company_data['default_account_receivable'].copy()
+        receivable_account.currency_id = self.other_currency  # Gold
+
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.partner_a.id,
+            'currency_id': self.other_currency.id,  # EUR
+            'invoice_line_ids': [
+                Command.create({
+                    'product_id': self.product_a.id,
+                    'quantity': 1.0,
+                    'account_id': receivable_account.id,
+                    'tax_ids': [],
+                })
+            ]
+        })
+
+        # Try to change the currency to one that conflicts with account's fixed currency
+        with self.assertRaisesRegex(UserError, "The account selected on your journal entry forces to provide a secondary currency"):
+            move.currency_id = self.company_data['currency']
+
     @freeze_time('2019-01-01')
     def test_date_reversal_exchange_move(self):
         """
@@ -4540,7 +4591,6 @@ class TestAccountMoveOutInvoiceOnchanges(AccountTestInvoicingCommon):
         ])
 
     def test_invoice_with_empty_currency(self):
-
         move = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': self.partner_a.id,

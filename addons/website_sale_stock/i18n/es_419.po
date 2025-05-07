@@ -3,17 +3,17 @@
 # 	* website_sale_stock
 # 
 # Translators:
-# Wil Odoo, 2024
 # Patricia Gutiérrez Capetillo <pagc@odoo.com>, 2024
 # Fernanda Alvarez, 2025
+# Wil Odoo, 2025
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-16 13:41+0000\n"
+"POT-Creation-Date: 2025-04-07 20:37+0000\n"
 "PO-Revision-Date: 2024-09-25 09:42+0000\n"
-"Last-Translator: Fernanda Alvarez, 2025\n"
+"Last-Translator: Wil Odoo, 2025\n"
 "Language-Team: Spanish (Latin America) (https://app.transifex.com/odoo/teams/41243/es_419/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -51,7 +51,7 @@ msgstr "Ajustes de configuración"
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.product_template_form_view_inherit_website_sale_stock
 #: model_terms:ir.ui.view,arch_db:website_sale_stock.res_config_settings_view_form
 msgid "Continue Selling"
-msgstr "Continuar venta"
+msgstr "Seguir vendiendo"
 
 #. module: website_sale_stock
 #: model:ir.model.fields,field_description:website_sale_stock.field_product_product__allow_out_of_stock_order
@@ -149,6 +149,11 @@ msgstr "Mensaje que aparecerá cuando no haya existencias"
 #: model:ir.model,name:website_sale_stock.model_product_template
 msgid "Product"
 msgstr "Producto"
+
+#. module: website_sale_stock
+#: model:ir.model,name:website_sale_stock.model_product_combo
+msgid "Product Combo"
+msgstr "Combo de productos"
 
 #. module: website_sale_stock
 #: model:ir.model,name:website_sale_stock.model_product_product

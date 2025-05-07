@@ -48,6 +48,7 @@ _ref_vat = {
     'gr': 'EL123456783',
     'hu': _lt('HU12345676 or 12345678-1-11 or 8071592153'),
     'hr': 'HR01234567896',  # Croatia, contributed by Milan Tribuson
+    'id': '1234567890123456',
     'ie': 'IE1234567FA',
     'il': _lt('XXXXXXXXX [9 digits] and it should respect the Luhn algorithm checksum'),
     'in': "12AAAAA1234AAZA",
@@ -79,7 +80,8 @@ _ref_vat = {
     'uy': _lt("Example: '219999830019' (format: 12 digits, all numbers, valid check digit)"),
     've': 'V-12345678-1, V123456781, V-12.345.678-1',
     'xi': 'XI123456782',
-    'sa': _lt('310175397400003 [Fifteen digits, first and last digits should be "3"]')
+    'sa': _lt('310175397400003 [Fifteen digits, first and last digits should be "3"]'),
+    'jp': 'T7000012050002',
 }
 
 _region_specific_vat_codes = {
@@ -314,7 +316,7 @@ class ResPartner(models.Model):
         tin1 = self.__check_tin1_ro_natural_persons.match(vat)
         if tin1:
             return True
-        tin2 = self.__check_tin1_ro_natural_persons.match(vat)
+        tin2 = self.__check_tin2_ro_natural_persons.match(vat)
         if tin2:
             return True
         # Check the vat number
@@ -323,6 +325,13 @@ class ResPartner(models.Model):
     __check_tin_hu_individual_re = re.compile(r'^8\d{9}$')
     __check_tin_hu_companies_re = re.compile(r'^\d{8}-?[1-5]-?\d{2}$')
     __check_tin_hu_european_re = re.compile(r'^\d{8}$')
+
+    def check_vat_gr(self, vat):
+        """ Allows some custom test VAT number to be valid to allow testing Greece EDI. """
+        greece_test_vats = ('047747270', '047747210', '047747220', '117747270', '127747270')
+        if vat in greece_test_vats:
+            return True
+        return stdnum.util.get_cc_module('gr', 'vat').is_valid(vat)
 
     def check_vat_hu(self, vat):
         """

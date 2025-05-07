@@ -6,9 +6,10 @@
 # Tamás Dombos, 2024
 # krnkris, 2024
 # Tamás Németh <ntomasz81@gmail.com>, 2024
-# gezza <geza.nagy@oregional.hu>, 2024
 # Martin Trigaux, 2024
 # Ákos Nagy <akos.nagy@oregional.hu>, 2024
+# Eiler Attila, 2025
+# gezza <geza.nagy@oregional.hu>, 2025
 # 
 msgid ""
 msgstr ""
@@ -16,7 +17,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2024-12-16 13:40+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
-"Last-Translator: Ákos Nagy <akos.nagy@oregional.hu>, 2024\n"
+"Last-Translator: gezza <geza.nagy@oregional.hu>, 2025\n"
 "Language-Team: Hungarian (https://app.transifex.com/odoo/teams/41243/hu/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -30,6 +31,8 @@ msgid ""
 "(object.state in ('draft', 'sent') and 'Quotation - %s' % (object.name)) or "
 "'Order - %s' % (object.name)"
 msgstr ""
+"(object.state in ('draft', 'sent') and 'Ajánlat - %s' % (object.name)) or "
+"'Rendelés - %s' % (object.name)"
 
 #. module: sale_pdf_quote_builder
 #: model_terms:ir.ui.view,arch_db:sale_pdf_quote_builder.quotation_document_kanban
@@ -462,7 +465,7 @@ msgstr "Termék"
 #: model:ir.model,name:sale_pdf_quote_builder.model_product_document
 #: model:ir.model.fields.selection,name:sale_pdf_quote_builder.selection__sale_pdf_form_field__document_type__product_document
 msgid "Product Document"
-msgstr ""
+msgstr "Termék dokumentum"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_sale_order_line__product_document_ids
@@ -550,7 +553,7 @@ msgstr "Erőforrás neve"
 #. module: sale_pdf_quote_builder
 #: model:ir.model.fields,field_description:sale_pdf_quote_builder.field_product_document__attached_on_sale
 msgid "Sale : Visible at"
-msgstr ""
+msgstr "Értékesítés : Megtekinthető"
 
 #. module: sale_pdf_quote_builder
 #: model:ir.actions.server,name:sale_pdf_quote_builder.cron_post_upgrade_assign_missing_form_fields_ir_actions_server

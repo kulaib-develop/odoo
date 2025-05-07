@@ -6,7 +6,7 @@ from odoo.exceptions import UserError
 from odoo.tools import float_compare, float_is_zero
 
 from itertools import chain
-from odoo.tools import groupby
+from odoo.tools import groupby, OrderedSet
 from collections import defaultdict
 
 
@@ -46,6 +46,10 @@ class StockValuationLayer(models.Model):
             self._cr, 'stock_valuation_layer_index',
             self._table, ['product_id', 'remaining_qty', 'stock_move_id', 'company_id', 'create_date']
         )
+        tools.create_index(
+            self._cr, 'stock_valuation_company_product_index',
+            self._table, ['product_id', 'company_id', 'id', 'value', 'quantity']
+        )
 
     def _compute_warehouse_id(self):
         for svl in self:
@@ -64,9 +68,15 @@ class StockValuationLayer(models.Model):
         ]).ids
         return [('id', 'in', layer_ids)]
 
+    def _candidate_sort_key(self):
+        self.ensure_one()
+        return tuple()
+
     def _validate_accounting_entries(self):
         am_vals = []
         aml_to_reconcile = defaultdict(set)
+        move_ids = OrderedSet()
+        svl_move_list = defaultdict(int) 
         for svl in self:
             if not svl.with_company(svl.company_id).product_id.valuation == 'real_time':
                 continue
@@ -75,7 +85,16 @@ class StockValuationLayer(models.Model):
             move = svl.stock_move_id
             if not move:
                 move = svl.stock_valuation_layer_id.stock_move_id
-            am_vals += move.with_company(svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
+            move_ids.add(move.id)
+            svl_move_list[svl.id] = move.id
+        
+        moves = self.env['stock.move'].browse(move_ids)
+        move_directions = moves._get_move_directions()
+        for svl in self:
+            linked_move = moves.browse(svl_move_list[svl.id])
+            if linked_move:
+                am_vals += linked_move.with_context(move_directions=move_directions).with_company(svl.company_id)._account_entry_move(svl.quantity, svl.description, svl.id, svl.value)
+
         if am_vals:
             account_moves = self.env['account.move'].sudo().create(am_vals)
             account_moves._post()

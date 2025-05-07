@@ -24,7 +24,7 @@ describe("collapsed selection", () => {
                 editor.shared.history.addStep();
             },
             contentAfterEdit:
-                '<p><i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]</p>',
+                '<p>\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]</p>',
             contentAfter: '<p><i class="fa fa-pastafarianism"></i>[]</p>',
         });
     });
@@ -40,7 +40,7 @@ describe("collapsed selection", () => {
                 editor.shared.history.addStep();
             },
             contentAfterEdit:
-                '<p><br></p><i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]',
+                '<p><br></p>\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]',
             contentAfter: '<p><br></p><i class="fa fa-pastafarianism"></i>[]',
             config: { allowInlineAtRoot: true },
         });
@@ -56,7 +56,7 @@ describe("collapsed selection", () => {
                 editor.shared.history.addStep();
             },
             contentAfterEdit:
-                '<p>a<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]b</p>',
+                '<p>a\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]b</p>',
             contentAfter: '<p>a<i class="fa fa-pastafarianism"></i>[]b</p>',
         });
     });
@@ -71,7 +71,7 @@ describe("collapsed selection", () => {
                 editor.shared.history.addStep();
             },
             contentAfterEdit:
-                '<p>a<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]b</p>',
+                '<p>a\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]b</p>',
             contentAfter: '<p>a<i class="fa fa-pastafarianism"></i>[]b</p>',
         });
     });
@@ -361,7 +361,7 @@ describe("not collapsed selection", () => {
                 );
             },
             contentAfterEdit:
-                '<p><i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]</p>',
+                '<p>\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]</p>',
             contentAfter: '<p><i class="fa fa-pastafarianism"></i>[]</p>',
         });
     });
@@ -376,8 +376,23 @@ describe("not collapsed selection", () => {
                 editor.shared.history.addStep();
             },
             contentAfterEdit:
-                '<p>a<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>[]c</p>',
+                '<p>a\ufeff<i class="fa fa-pastafarianism" contenteditable="false">\u200b</i>\ufeff[]c</p>',
             contentAfter: '<p>a<i class="fa fa-pastafarianism"></i>[]c</p>',
+        });
+    });
+
+    test("should delete selection and insert html in its place (3)", async () => {
+        await testEditor({
+            contentBefore: "<h1>[abc</h1><p>def]</p>",
+            stepFunction: async editor => {
+                // There's an empty text node after the paragraph:
+                editor.editable.lastChild.after(editor.document.createTextNode(""));
+                editor.shared.dom.insert(
+                    parseHTML(editor.document, "<p>ghi</p><p>jkl</p>")
+                );
+                editor.shared.history.addStep();
+            },
+            contentAfter: "<p>ghi</p><p>jkl[]</p>",
         });
     });
 
@@ -498,7 +513,10 @@ describe("not collapsed selection", () => {
                         <tr><td>gh</td><td>ij</td></tr>
                     </tbody></table>`
             ),
-            stepFunction: (editor) => {
+            stepFunction: async (editor) => {
+                // Table selection happens on selectionchange event which is
+                // fired in the next tick.
+                await tick();
                 editor.shared.dom.insert(span("TEST"));
                 editor.shared.history.addStep();
             },
@@ -561,6 +579,7 @@ describe("not collapsed selection", () => {
             contentAfter: `<p><span class="a">TEST</span>[]</p>`,
         });
     });
+
     test("should insert html containing ZWNBSP", async () => {
         await testEditor({
             contentBefore: "<p>[]<br></p>",
